@@ -35,8 +35,11 @@ public class SIMArrayPolynomial {
 
     
     // �crivez le restant du programme afin d'atteindre les objectifs de ce travail.
-    // ...
-    
+
+      System.out.println("La primitive de la fonction polynomiale avec pour C 0 est F(x) = "+ arrayPolynomialToString(primitive0(array), 'x'));
+      System.out.println("L'integrale definie de "+ a + " à "+ b + " vaut " + computeDefiniteIntegral(array, a, b));
+      System.out.println(isAreaQuad(array, a, b));
+
    
   
   }
@@ -416,9 +419,13 @@ public class SIMArrayPolynomial {
   public static double[] primitive0(double[] array) {
 	  
     // Effacez la ligne ci-dessous (throw new ...) et �crivez le code appropri�.
-    throw new RuntimeException("La m�thode public static double[] primitive0(double[] array) n'a pas �t� impl�ment�e.");
-
-    
+    //throw new RuntimeException("La m�thode public static double[] primitive0(double[] array) n'a pas �t� impl�ment�e.");
+    double[] primitive0Array = new double[array.length+1];
+    primitive0Array[0] = 0;
+    for (int i = 0; i < array.length; i++) {
+        primitive0Array[i+1] = array[i]/(i+1);
+    }
+    return primitive0Array;
   }
 
   
@@ -437,9 +444,9 @@ public class SIMArrayPolynomial {
   public static double computeDefiniteIntegral(double[] array, double a, double b) {
        
     // Effacez la ligne ci-dessous (throw new ...) et �crivez le code appropri�.
-    throw new RuntimeException("La m�thode public static double computeDefiniteIntegral(double[] array, double a, double b) n'a pas �t� impl�ment�e.");
-
-    
+    //throw new RuntimeException("La m�thode public static double computeDefiniteIntegral(double[] array, double a, double b) n'a pas �t� impl�ment�e.");
+      double[] primitive0Array = primitive0(array);
+      return computePolynomial(primitive0Array, b) - computePolynomial(primitive0Array, a);
   }
 
   
@@ -457,12 +464,43 @@ public class SIMArrayPolynomial {
    * @return Le nombre de z�ros du polyn�me de degr� 2.
    */
   public static String isAreaQuad(double[] array, double a, double b) {
-	  
-	  // Effacez la ligne ci-dessous (throw new ...) et �crivez le code appropri�.
-	  throw new RuntimeException("La m�thode public static String isAreaQuad(double[] array, double a, double b) n'a pas �t� impl�ment�e.");
 
-	  
+      // Effacez la ligne ci-dessous (throw new ...) et �crivez le code appropri�.
+      //throw new RuntimeException("La m�thode public static String isAreaQuad(double[] array, double a, double b) n'a pas �t� impl�ment�e.");
+      if (array.length != 3) {
+          System.out.println("La méthode isAreaQuad() ne permet pas de polynome dont le degree est different de 2");
+          return "La méthode isAreaQuad() ne permet pas de polynome dont le degree est different de 2";
+      }
+      if (a > b) {
+          System.out.println("La méthode isAreaQuad() ne permet pas que la borne inferieur soit plus grande que la borne superieur");
+          return "La méthode isAreaQuad() ne permet pas que la borne inferieur soit plus grande que la borne superieur";
+      }
+      boolean isOnTopX;
+
+      if (array[2] > 0) { //Parabole ouverte vers le haut
+          isOnTopX = numberZeroQuad(array) <= 0; // il y a un ou aucun zero
+          if (!isOnTopX) // Il y a 2 zero
+              isOnTopX = (  a <= valueZeroQuad(array)[0] && b <= valueZeroQuad(array)[0] || // Si les bornes sont avant ou apres chacun des zeros
+                            a >= valueZeroQuad(array)[1] && b >= valueZeroQuad(array)[1]);
+      } else {
+          isOnTopX = !(numberZeroQuad(array) <= 0); // La courbe est constament sous l'axe des x
+          if (!isOnTopX)
+              isOnTopX = (a >= valueZeroQuad(array)[0] && b<=valueZeroQuad(array)[1]);
+      };
+      if (a<0) isOnTopX = false; //Si la borne inferieur est derriere l'axe des y, l'aire ne peut pas correspond au resultat donne par l'integrale definie
+      return "L'integrale definie de a à b " +(isOnTopX?"":"ne ") +"correspond "+ (isOnTopX?"":"pas ")+"à l'aire sous la courbe";
   }
 
-  
+    /**
+     * Calcule le resultat d'un polynome evaluer en x
+     * @param array Le tableau des coefficient.
+     * @param x La valeur de x
+     * @return une valeur entre -infinie et +infinie
+     */
+  private static double computePolynomial(double[] array, double x) {
+      double result = 0.0D;
+      for (int i = 0; i < array.length; i++)
+          result += array[i] * Math.pow(x,i);
+      return result;
+  }
 }
